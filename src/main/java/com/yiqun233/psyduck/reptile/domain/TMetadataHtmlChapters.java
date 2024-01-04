@@ -56,4 +56,7 @@ public class TMetadataHtmlChapters implements Serializable {
     @TableField("sequence")
     private Integer sequence;
 
+    @TableField(exist = false)
+    private String attr;
+
 }
