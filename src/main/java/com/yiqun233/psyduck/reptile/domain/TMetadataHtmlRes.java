@@ -21,6 +21,12 @@ public class TMetadataHtmlRes implements Serializable {
     private String id;
 
     /**
+     * 章节id
+     */
+    @TableField("chapter_id")
+    private String chapterId;
+
+    /**
      * 文章id
      */
     @TableField("metadata_html_id")

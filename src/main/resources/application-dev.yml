@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://47.100.188.120:53306/dsai_ai?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=true
-    username: dsai_ai
-    password: 1qaz@WSX202312
+    url: jdbc:mysql://10.157.108.82:3307/dsai_reptile1?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=true
+    username: root
+    password: 123456
   redis:
     host: 192.168.1.5   # Redis服务器地址
     port: 6379            # Redis服务器连接端口

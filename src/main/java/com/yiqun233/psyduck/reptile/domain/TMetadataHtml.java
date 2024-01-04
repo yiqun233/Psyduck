@@ -27,16 +27,28 @@ public class TMetadataHtml implements Serializable {
     private Integer type;
 
     /**
-     * 标题
+     * 标题-中文
      */
-    @TableField("title")
-    private String title;
+    @TableField("title_cn")
+    private String titleCn;
 
     /**
-     * 作者
+     * 标题-英文
      */
-    @TableField("authors")
-    private String authors;
+    @TableField("title_en")
+    private String titleEn;
+
+    /**
+     * 作者-中文
+     */
+    @TableField("authors_cn")
+    private String authorsCn;
+
+    /**
+     * 作者-英文
+     */
+    @TableField("authors_en")
+    private String authorsEn;
 
     /**
      * doi
@@ -57,7 +69,19 @@ public class TMetadataHtml implements Serializable {
     private String digestEn;
 
     /**
-     * 正文
+     * 关键词-中文
+     */
+    @TableField("keywords_cn")
+    private String keywordsCn;
+
+    /**
+     * 关键词-英文
+     */
+    @TableField("keywords_en")
+    private String keywordsEn;
+
+    /**
+     * 正文 （待删除）
      */
     @TableField("main_body")
     private String mainBody;

@@ -75,7 +75,7 @@ public class TMetadataHtmlServiceImpl extends ServiceImpl<TMetadataHtmlMapper, T
      * @throws IOException
      */
     public void getChildAddress() throws IOException {
-        for (int i = 70; i < 88; i++) {
+        for (int i = 70; i < 71; i++) {
             String url = "https://jns.nju.edu.cn/CN/volumn/volumn_" + i + ".shtml";
             String htmlDocument = getHtmlDocument(url);
             Document doc = Jsoup.parse(htmlDocument);
@@ -97,7 +97,7 @@ public class TMetadataHtmlServiceImpl extends ServiceImpl<TMetadataHtmlMapper, T
     public void getLiteratureHtmlAddress(String url) throws IOException {
         String htmlDocument = getHtmlDocument(url);
         Document doc = Jsoup.parse(htmlDocument);
-        if(doc.selectFirst("span.change-section") !=null &&doc.selectFirst("span.change-section").selectFirst("a")!=null ){
+        if (doc.selectFirst("span.change-section") != null && doc.selectFirst("span.change-section").selectFirst("a") != null) {
             Element label = Objects.requireNonNull(doc.selectFirst("span.change-section")).selectFirst("a");
             String onclick = null;
             if (label != null) {
@@ -200,13 +200,10 @@ public class TMetadataHtmlServiceImpl extends ServiceImpl<TMetadataHtmlMapper, T
 
     public void getLiteratureContent(String url) throws IOException {
         String id = IdUtil.simpleUUID();
-//        String url = "https://jns.nju.edu.cn/article/2019/0469-5097/0469-5097-2019-55-6-879.shtml"; // 替换为你想要爬取的URL
 
         String content = getHtmlDocument(url);
 
-        //标题
         Document doc = Jsoup.parse(content);
-        String title = doc.title();
 
         //doi
         Element metaTag = doc.selectFirst("meta[name=citation_doi]");
@@ -215,95 +212,133 @@ public class TMetadataHtmlServiceImpl extends ServiceImpl<TMetadataHtmlMapper, T
             doi = metaTag.attr("content");
         }
 
-        //作者
-        Element metaTag2 = doc.selectFirst("meta[name=citation_authors]");
-        String authors = null;
-        if (metaTag2 != null) {
-            authors = metaTag2.attr("content");
+        //中文
+        Element cn = doc.selectFirst("div.title-cn");
+        //标题cn
+        String titleCn = "";
+        Element element1 = cn.selectFirst("article-title");
+        if (element1 != null) {
+            titleCn = element1.text();
+        }
+        //作者cn
+        Element element3 = cn.selectFirst("p.author_cn");
+        String authorsCn = null;
+        if (element3 != null) {
+            authorsCn = element3.text();
         }
 
+        //英文
+        Element en = doc.selectFirst("div.title-en");
+        //标题en
+        String titleEn = null;
+        Element element2 = en.selectFirst("trans-title");
+        if (element2 != null) {
+            titleEn = element2.text();
+        }
+        //作者en
+        Element element4 = en.selectFirst("p.author_cn");
+        String authorsEn = null;
+        if (element4 != null) {
+            authorsEn = element4.text();
+        }
 
         // 摘要cn
-        Element contentDivCn = doc.selectFirst("div.zhaiyao-cn-content");
-        String zhaiyaoCn = null;
-        if (contentDivCn != null) {
-            zhaiyaoCn = contentDivCn.text();
+        Element abstractDivCn = doc.selectFirst("div.zhaiyao-cn-content");
+        String abstractCn = null;
+        Element cnAbstract = abstractDivCn.selectFirst("abstract");
+        if (cnAbstract != null) {
+            abstractCn = cnAbstract.text();
+        }
+        // 关键词cn
+        String keywordCn = null;
+        Element cnKeyword = abstractDivCn.selectFirst("p.keyword_cn");
+        if (cnKeyword != null) {
+            keywordCn = cnKeyword.text();
         }
 
         // 摘要en
-        Element contentDivEn = doc.selectFirst("div.zhaiyao-en-content");
-        String zhaiyaoEn = null;
-        if (contentDivEn != null) {
-            zhaiyaoEn = contentDivEn.text();
+        Element abstractDivEn = doc.selectFirst("div.zhaiyao-en-content");
+        String abstractEn = null;
+        Element enAbstract = abstractDivEn.selectFirst("trans-abstract");
+        if (enAbstract != null) {
+            abstractEn = enAbstract.text();
+        }
+        // 关键词en
+        String keywordEn = null;
+        Element enKeyword = abstractDivEn.selectFirst("p.keyword_en");
+        if (enKeyword != null) {
+            keywordEn = enKeyword.text();
         }
 
-        //正文
-        Elements bodyAll = doc.select("div.content-zw-1");
-        StringBuilder mainBody = new StringBuilder();
-        for (Element element : bodyAll) {
-            mainBody.append(element.text());
-        }
+//        //正文
+//        Elements bodyAll = doc.select("div.content-zw-1");
+//        StringBuilder mainBody = new StringBuilder();
+//        for (Element element : bodyAll) {
+//            mainBody.append(element.text());
+//        }
 
         //图片
-        Elements pictureAll = doc.select("div.content-zw-img");
-        for (Element element : pictureAll) {
-            if (element.selectFirst("p.tishi") != null && element.selectFirst("p.tishi").selectFirst("a") != null) {
-                Element a = element.selectFirst("p.tishi").selectFirst("a");
-                String href = null;
-                if (a != null) {
-                    href = a.attr("href");
-                }
-                if (href != null) {
-                    href = removeHtmlExtension(href);
-
-                    int lastSlashIndex = url.lastIndexOf("/");
-                    String result = url.substring(0, lastSlashIndex);
-                    String picUrl = result + "/" + href;
-                    String path = "\\pic\\南京大学\\" + title;
-                    String pathName = saveImageToLocal(picUrl, path);
-
-                    TMetadataHtmlRes tMetadataHtmlRes = new TMetadataHtmlRes();
-                    tMetadataHtmlRes.setId(IdUtil.simpleUUID());
-                    tMetadataHtmlRes.setMetadataHtmlId(id);
-                    tMetadataHtmlRes.setType(1);
-                    tMetadataHtmlRes.setPath(pathName);
-                    tMetadataHtmlResMapper.insert(tMetadataHtmlRes);
-                }
-
-            }
-        }
+//        Elements pictureAll = doc.select("div.content-zw-img");
+//        for (Element element : pictureAll) {
+//            if (element.selectFirst("p.tishi") != null && element.selectFirst("p.tishi").selectFirst("a") != null) {
+//                Element a = element.selectFirst("p.tishi").selectFirst("a");
+//                String href = null;
+//                if (a != null) {
+//                    href = a.attr("href");
+//                }
+//                if (href != null) {
+//                    href = removeHtmlExtension(href);
+//
+//                    int lastSlashIndex = url.lastIndexOf("/");
+//                    String result = url.substring(0, lastSlashIndex);
+//                    String picUrl = result + "/" + href;
+//                    String path = "\\pic\\南京大学\\" + titleCn;
+//                    String pathName = saveImageToLocal(picUrl, path);
+//
+//                    TMetadataHtmlRes tMetadataHtmlRes = new TMetadataHtmlRes();
+//                    tMetadataHtmlRes.setId(IdUtil.simpleUUID());
+//                    tMetadataHtmlRes.setMetadataHtmlId(id);
+//                    tMetadataHtmlRes.setType(1);
+//                    tMetadataHtmlRes.setPath(pathName);
+//                    tMetadataHtmlResMapper.insert(tMetadataHtmlRes);
+//                }
+//
+//            }
+//        }
 
         //表格
-        Elements formAll = doc.select("div.zw-zsbg");
-        for (Element element : formAll) {
-            if (element.selectFirst("p.biaotishi1") != null && element.selectFirst("p.biaotishi1").selectFirst("a") != null) {
-                Element a = element.selectFirst("p.biaotishi1").selectFirst("a");
-                String href = null;
-                if (a != null) {
-                    href = a.attr("href");
-                    int lastSlashIndex = url.lastIndexOf("/");
-                    String result = url.substring(0, lastSlashIndex);
-                    String formUrl = result + "/" + href;
-                    TMetadataHtmlRes tMetadataHtmlRes = new TMetadataHtmlRes();
-                    tMetadataHtmlRes.setId(IdUtil.simpleUUID());
-                    tMetadataHtmlRes.setMetadataHtmlId(id);
-                    tMetadataHtmlRes.setType(2);
-                    tMetadataHtmlRes.setTableHtml(formUrl);
-                    tMetadataHtmlResMapper.insert(tMetadataHtmlRes);
-                }
-            }
-
-        }
+//        Elements formAll = doc.select("div.zw-zsbg");
+//        for (Element element : formAll) {
+//            if (element.selectFirst("p.biaotishi1") != null && element.selectFirst("p.biaotishi1").selectFirst("a") != null) {
+//                Element a = element.selectFirst("p.biaotishi1").selectFirst("a");
+//                String href = null;
+//                if (a != null) {
+//                    href = a.attr("href");
+//                    int lastSlashIndex = url.lastIndexOf("/");
+//                    String result = url.substring(0, lastSlashIndex);
+//                    String formUrl = result + "/" + href;
+//                    TMetadataHtmlRes tMetadataHtmlRes = new TMetadataHtmlRes();
+//                    tMetadataHtmlRes.setId(IdUtil.simpleUUID());
+//                    tMetadataHtmlRes.setMetadataHtmlId(id);
+//                    tMetadataHtmlRes.setType(2);
+//                    tMetadataHtmlRes.setTableHtml(formUrl);
+//                    tMetadataHtmlResMapper.insert(tMetadataHtmlRes);
+//                }
+//            }
+//        }
 
         TMetadataHtml metadataHtml = new TMetadataHtml();
         metadataHtml.setId(id);
         metadataHtml.setType(2);
-        metadataHtml.setTitle(title);
-        metadataHtml.setAuthors(authors);
         metadataHtml.setDoi(doi);
-        metadataHtml.setDigestCn(zhaiyaoCn);
-        metadataHtml.setDigestEn(zhaiyaoEn);
-        metadataHtml.setMainBody(mainBody.toString());
+        metadataHtml.setTitleCn(titleCn);
+        metadataHtml.setTitleEn(titleEn);
+        metadataHtml.setAuthorsCn(authorsCn);
+        metadataHtml.setAuthorsEn(authorsEn);
+        metadataHtml.setDigestCn(abstractCn);
+        metadataHtml.setDigestEn(abstractEn);
+        metadataHtml.setKeywordsCn(keywordCn);
+        metadataHtml.setKeywordsEn(keywordEn);
         metadataHtml.setMetadataStr(content);
         tMetadataHtmlMapper.insert(metadataHtml);
     }
