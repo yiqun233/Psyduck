@@ -3,6 +3,8 @@ package com.yiqun233.psyduck.reptile.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yiqun233.psyduck.reptile.domain.TMetadataHtmlRes;
 
+import java.io.IOException;
+
 /**
 * @author YI
 * @description 针对表【t_metadata_html_res】的数据库操作Service
@@ -10,4 +12,5 @@ import com.yiqun233.psyduck.reptile.domain.TMetadataHtmlRes;
 */
 public interface TMetadataHtmlResService extends IService<TMetadataHtmlRes> {
 
+    void getChildAddress() throws IOException;
 }
