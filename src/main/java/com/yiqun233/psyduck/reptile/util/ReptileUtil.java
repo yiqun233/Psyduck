@@ -30,6 +30,7 @@ public class ReptileUtil {
         String result = "";
         // 发送HTTP GET请求
         URLConnection connection = new URL(url).openConnection();
+        connection.setRequestProperty("User-Agent", "Mozilla/5.0");
         HttpURLConnection httpConn = (HttpURLConnection) connection;
         httpConn.setRequestMethod("GET");
         httpConn.connect();
@@ -37,7 +38,7 @@ public class ReptileUtil {
         // 检查连接是否成功
         int responseCode = httpConn.getResponseCode();
         if (responseCode != HttpURLConnection.HTTP_OK) {
-            throw new RuntimeException("Failed to connect: " + responseCode);
+            throw new RuntimeException("Failed to connect: " +url + responseCode);
         }
 
         // 读取响应内容
