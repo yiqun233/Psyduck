@@ -1,5 +1,7 @@
 package com.yiqun233.psyduck.reptile.controller;
 
+import com.yiqun233.psyduck.reptile.domain.TMetadataHtml;
+import com.yiqun233.psyduck.reptile.service.TMetadataHtmlChaptersService;
 import com.yiqun233.psyduck.reptile.service.TMetadataHtmlResService;
 import com.yiqun233.psyduck.reptile.service.TMetadataHtmlService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,10 @@ public class TestController {
     @Autowired
     TMetadataHtmlResService tMetadataHtmlResService;
 
+    @Autowired
+    TMetadataHtmlChaptersService tMetadataHtmlChaptersService;
+
+
     @GetMapping("/test")
     public String getApiList() throws IOException {
         tMetadataHtmlService.getChildAddress();
@@ -36,6 +42,12 @@ public class TestController {
     @GetMapping("/test2")
     public String getApiList2() throws IOException {
         tMetadataHtmlResService.getChildAddress();
+        return "success";
+    }
+
+    @GetMapping("/test3")
+    public String getApiList3() throws IOException {
+        tMetadataHtmlChaptersService.getChildAddress();
         return "success";
     }
 
