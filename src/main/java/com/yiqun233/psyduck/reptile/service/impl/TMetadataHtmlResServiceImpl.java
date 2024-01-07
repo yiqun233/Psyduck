@@ -1,6 +1,7 @@
 package com.yiqun233.psyduck.reptile.service.impl;
 
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yiqun233.psyduck.reptile.domain.TMetadataHtml;
 import com.yiqun233.psyduck.reptile.domain.TMetadataHtmlChapters;
@@ -49,7 +50,7 @@ public class TMetadataHtmlResServiceImpl extends ServiceImpl<TMetadataHtmlResMap
      * @throws IOException
      */
     public void getChildAddress() throws IOException {
-        for (int i = 1366; i < 1367; i++) {
+        for (int i = 1369; i < 1370; i++) {
             String url = "http://ogg.pepris.com/CN/volumn/volumn_" + i + ".shtml";
             String htmlDocument = ReptileUtil.getHtmlDocument(url);
             Document doc = Jsoup.parse(htmlDocument);
@@ -88,7 +89,10 @@ public class TMetadataHtmlResServiceImpl extends ServiceImpl<TMetadataHtmlResMap
                     urlAttr = ReptileUtil.extractStringBetweenLastTwoSingleQuotes(onclick);
                 }
                 String contentUrl = "http://ogg.pepris.com/" + urlAttr;
-                getLiteratureContent(contentUrl);
+                if(contentUrl.equals("http://ogg.pepris.com/CN/10.11743/ogg20230312")){
+                    getLiteratureContent(contentUrl);
+                }
+
             }
         }
 
@@ -97,6 +101,7 @@ public class TMetadataHtmlResServiceImpl extends ServiceImpl<TMetadataHtmlResMap
 
     public void getLiteratureContent(String url) throws IOException {
         String id = IdUtil.simpleUUID();
+
 
         String content = ReptileUtil.getHtmlDocument(url);
 
@@ -111,61 +116,73 @@ public class TMetadataHtmlResServiceImpl extends ServiceImpl<TMetadataHtmlResMap
 
         //中文
         Element cn = doc.selectFirst("div.title-cn");
-        //标题cn
         String titleCn = "";
-        Element element1 = cn.selectFirst("article-title");
-        if (element1 != null) {
-            titleCn = element1.text();
-        }
-        //作者cn
-        Element element3 = cn.selectFirst("p.author_cn");
         String authorsCn = null;
-        if (element3 != null) {
-            authorsCn = element3.text();
+        //标题cn
+        if (cn != null) {
+            Element element1 = cn.selectFirst("article-title");
+            if (element1 != null) {
+                titleCn = element1.text();
+            }
+            //作者cn
+            Element element3 = cn.selectFirst("p.author_cn");
+            if (element3 != null) {
+                authorsCn = element3.text();
+            }
         }
+
 
         //英文
         Element en = doc.selectFirst("div.title-en");
-        //标题en
-        String titleEn = null;
-        Element element2 = en.selectFirst("trans-title");
-        if (element2 != null) {
-            titleEn = element2.text();
-        }
-        //作者en
-        Element element4 = en.selectFirst("p.author_cn");
+        String titleEn = "";
         String authorsEn = null;
-        if (element4 != null) {
-            authorsEn = element4.text();
+        if (en != null) {
+            //标题en
+            Element element2 = en.selectFirst("trans-title");
+            if (element2 != null) {
+                titleEn = element2.text();
+            }
+            //作者en
+            Element element4 = en.selectFirst("p.author_cn");
+            if (element4 != null) {
+                authorsEn = element4.text();
+            }
         }
+
 
         // 摘要cn
         Element abstractDivCn = doc.selectFirst("div.zhaiyao-cn-content");
-        String abstractCn = null;
-        Element cnAbstract = abstractDivCn.selectFirst("p");
-        if (cnAbstract != null) {
-            abstractCn = cnAbstract.text();
-        }
-        // 关键词cn
         String keywordCn = null;
-        Element cnKeyword = abstractDivCn.selectFirst("p.keyword_cn");
-        if (cnKeyword != null) {
-            keywordCn = cnKeyword.text();
+        String abstractCn = null;
+        if (abstractDivCn != null) {
+            Element cnAbstract = abstractDivCn.selectFirst("abstract");
+            if (cnAbstract != null) {
+                abstractCn = cnAbstract.text();
+            }
+            // 关键词cn
+            Element cnKeyword = abstractDivCn.selectFirst("p.keyword_cn");
+            if (cnKeyword != null) {
+                keywordCn = cnKeyword.text();
+            }
         }
+
 
         // 摘要en
         Element abstractDivEn = doc.selectFirst("div.zhaiyao-en-content");
         String abstractEn = null;
-        Element enAbstract = abstractDivEn.selectFirst("p");
-        if (enAbstract != null) {
-            abstractEn = enAbstract.text();
-        }
-        // 关键词en
         String keywordEn = null;
-        Element enKeyword = abstractDivEn.selectFirst("p.keyword_en");
-        if (enKeyword != null) {
-            keywordEn = enKeyword.text();
+        if (abstractDivEn != null) {
+            Element enAbstract = abstractDivEn.selectFirst("trans-abstract");
+            if (enAbstract != null) {
+                abstractEn = enAbstract.text();
+            }
+            // 关键词en
+            Element enKeyword = abstractDivEn.selectFirst("p.keyword_en");
+            if (enKeyword != null) {
+                keywordEn = enKeyword.text();
+            }
         }
+
 
         //正文
         Element bodyAll = doc.selectFirst("div.content-zw");
@@ -174,7 +191,7 @@ public class TMetadataHtmlResServiceImpl extends ServiceImpl<TMetadataHtmlResMap
             String levelText = level.text();
             System.out.println(levelText);
         }
-        List<String> collect = divs.stream().map(Element::text).collect(Collectors.toList());
+        List<String> collect = divs.stream().map(Element::text).filter(StrUtil::isNotEmpty).collect(Collectors.toList());
         List<TMetadataHtmlChapters> tMetadataHtmlChapters = ReptileUtil.processList(collect, id);
         String text = bodyAll.text();
         for (int i = 0; i < tMetadataHtmlChapters.size(); i++) {
@@ -203,6 +220,14 @@ public class TMetadataHtmlResServiceImpl extends ServiceImpl<TMetadataHtmlResMap
                     href = a.attr("href");
                 }
                 if (href != null) {
+                    String pa = "";
+                    if (StrUtil.isNotEmpty(titleCn)) {
+                        pa = titleCn;
+                    } else if (StrUtil.isEmpty(titleCn) && StrUtil.isNotEmpty(titleEn)) {
+                        pa = titleEn;
+                    } else {
+                        continue;
+                    }
                     href = ReptileUtil.removeHtmlExtension(href);
                     Element shuoming = element.selectFirst("div.content-zw-img-shuoming");
                     Optional<TMetadataHtmlChapters> first = tMetadataHtmlChapters.stream().filter(i -> i.getContent().contains(shuoming.text())).findFirst();
@@ -210,7 +235,7 @@ public class TMetadataHtmlResServiceImpl extends ServiceImpl<TMetadataHtmlResMap
                     int lastSlashIndex = url.lastIndexOf("/");
                     String result = url.substring(0, lastSlashIndex);
                     String picUrl = result + "/" + href;
-                    String path = "\\pic\\石油与天然气地质\\" + titleCn;
+                    String path = "\\pic\\石油与天然气地质\\" + pa;
                     String pathName = ReptileUtil.saveImageToLocal(picUrl, path);
 
                     TMetadataHtmlRes tMetadataHtmlRes = new TMetadataHtmlRes();

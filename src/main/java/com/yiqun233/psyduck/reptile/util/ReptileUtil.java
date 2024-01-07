@@ -30,6 +30,7 @@ public class ReptileUtil {
         String result = "";
         // 发送HTTP GET请求
         URLConnection connection = new URL(url).openConnection();
+        connection.setRequestProperty("User-Agent", "Mozilla/5.0");
         HttpURLConnection httpConn = (HttpURLConnection) connection;
         httpConn.setRequestMethod("GET");
         httpConn.connect();
@@ -37,7 +38,7 @@ public class ReptileUtil {
         // 检查连接是否成功
         int responseCode = httpConn.getResponseCode();
         if (responseCode != HttpURLConnection.HTTP_OK) {
-            throw new RuntimeException("Failed to connect: " + responseCode);
+            throw new RuntimeException("Failed to connect: " +url + responseCode);
         }
 
         // 读取响应内容
@@ -97,9 +98,13 @@ public class ReptileUtil {
         URL url = new URL(imageUrl);
         localFolderPath = sanitizePath(localFolderPath);
         createFolderIfNotExists(localFolderPath);
+
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3");
+
         // 使用 InputStream 从网络获取数据
         String fileName = "";
-        try (InputStream in = url.openStream()) {
+        try (InputStream in = connection.getInputStream()) {
             // 构建本地文件路径
             fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
             Path localPath = Paths.get(localFolderPath, fileName);

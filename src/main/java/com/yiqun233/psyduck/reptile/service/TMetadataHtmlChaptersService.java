@@ -3,6 +3,8 @@ package com.yiqun233.psyduck.reptile.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yiqun233.psyduck.reptile.domain.TMetadataHtmlChapters;
 
+import java.io.IOException;
+
 /**
 * @author Qun Q Yi
 * @description 针对表【t_metadata_html_chapters】的数据库操作Service
@@ -10,4 +12,5 @@ import com.yiqun233.psyduck.reptile.domain.TMetadataHtmlChapters;
 */
 public interface TMetadataHtmlChaptersService extends IService<TMetadataHtmlChapters> {
 
+    void getChildAddress() throws IOException;
 }
