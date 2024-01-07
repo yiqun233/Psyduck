@@ -2,6 +2,8 @@ package com.yiqun233.psyduck.reptile.util;
 
 import cn.hutool.core.util.IdUtil;
 import com.yiqun233.psyduck.reptile.domain.TMetadataHtmlChapters;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.edge.EdgeDriver;
 
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
@@ -185,5 +187,27 @@ public class ReptileUtil {
             seq++;
         }
         return resultList;
+    }
+
+    public static String getContentBySeleniumhq(String url){
+        // 设置WebDriver的路径
+        System.setProperty("webdriver.edge.driver", "D:\\workSpace\\driver\\msedgedriver.exe");
+
+        // 创建Chrome浏览器实例
+        WebDriver driver = new EdgeDriver();
+
+        // 打开目标网页
+        driver.get(url);
+
+        // 执行JavaScript代码，以模拟浏览器行为（如果需要）
+        // driver.executeScript("javascript:...");
+
+        // 获取HTML内容
+        String htmlContent = driver.getPageSource();
+
+
+        driver.quit();
+
+        return htmlContent;
     }
 }

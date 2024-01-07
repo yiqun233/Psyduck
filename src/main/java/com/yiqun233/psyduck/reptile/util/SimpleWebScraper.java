@@ -6,7 +6,7 @@ import org.openqa.selenium.edge.EdgeDriver;
 public class SimpleWebScraper {
     public static void main(String[] args) {
         // 设置WebDriver的路径
-        System.setProperty("webdriver.edge.driver", "C:\\Windows\\Software\\edgedriver_win64\\msedgedriver.exe");
+        System.setProperty("webdriver.edge.driver", "D:\\workSpace\\driver\\msedgedriver.exe");
 
         // 创建Chrome浏览器实例
         WebDriver driver = new EdgeDriver();
@@ -23,7 +23,7 @@ public class SimpleWebScraper {
         // 打印HTML内容
         System.out.println(htmlContent);
 
-// 关闭浏览器
+        // 关闭浏览器
         driver.quit();
     }
 }

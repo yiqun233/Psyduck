@@ -51,6 +51,12 @@ public class TestController {
         return "success";
     }
 
+    @GetMapping("/test4")
+    public String getApiList4() throws IOException {
+        tMetadataHtmlChaptersService.getChildAddress2();
+        return "success";
+    }
+
 
 
 }
