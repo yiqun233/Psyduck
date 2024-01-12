@@ -12,6 +12,7 @@ import com.yiqun233.psyduck.reptile.mapper.TMetadataHtmlResMapper;
 import com.yiqun233.psyduck.reptile.service.TMetadataHtmlChaptersService;
 import com.yiqun233.psyduck.reptile.util.ReptileUtil;
 import org.jsoup.Jsoup;
+import org.jsoup.internal.StringUtil;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -49,11 +50,12 @@ public class TMetadataHtmlChaptersServiceImpl extends ServiceImpl<TMetadataHtmlC
      * @throws IOException
      */
     public void getChildAddress() throws IOException {
-        for (int i = 1254; i < 1470; i++) {
+        for (int i = 1403; i < 1404; i++) {
             String url = "http://www.cpedm.com/CN/volumn/volumn_" + i + ".shtml";
             String htmlDocument = ReptileUtil.getHtmlDocument(url);
             Document doc = Jsoup.parse(htmlDocument);
             Elements selects = doc.select("div.article-l");
+
             for (Element select : selects) {
                 Element literatureMain = select.selectFirst("div.j-btn").selectFirst("span.richhtml").selectFirst("a");
                 if (literatureMain != null) {
@@ -61,7 +63,14 @@ public class TMetadataHtmlChaptersServiceImpl extends ServiceImpl<TMetadataHtmlC
                     String doi = select.selectFirst("a.j-doi").text();
                     String removre = "https://doi.org/";
                     doi = doi.substring(removre.length());
-                    getLiteratureContent(literatureMainUrl, doi);
+                    try {
+                        if(!literatureMainUrl.equals("http://www.cpedm.com/article/2021/1000-0747-48-2-233.html")){
+                            getLiteratureContent(literatureMainUrl, doi);
+                        }
+                    }catch (Exception e){
+                        System.out.println("错误地址"+literatureMainUrl);
+                    }
+
                 }
             }
         }
@@ -152,43 +161,48 @@ public class TMetadataHtmlChaptersServiceImpl extends ServiceImpl<TMetadataHtmlC
         //图片
         Elements pictureAll = doc.select("div.figure.outline_anchor");
         for (Element element : pictureAll) {
-            Element a = element.selectFirst("a.group3");
+            try{
+                Element a = element.selectFirst("a.group3");
 
-            String href = null;
+                String href = null;
 
-            if (a != null) {
-                href = a.attr("href");
-            }
-            if (href != null) {
-                String pa = "";
-                if (StrUtil.isNotEmpty(titleCn)) {
-                    pa = titleCn;
-                } else if (StrUtil.isEmpty(titleCn) && StrUtil.isNotEmpty(titleEn)) {
-                    pa = titleEn;
-                } else {
-                    continue;
+                if (a != null) {
+                    href = a.attr("href");
                 }
-                href = ReptileUtil.removeHtmlExtension(href);
-                Element b = element.selectFirst("b");
-                Optional<TMetadataHtmlChapters> first = tMetadataHtmlChapters.stream().filter(i -> i.getContent().contains(b.text())).findFirst();
+                if (href != null) {
+                    String pa = "";
+                    if (StrUtil.isNotEmpty(titleCn)) {
+                        pa = titleCn;
+                    } else if (StrUtil.isEmpty(titleCn) && StrUtil.isNotEmpty(titleEn)) {
+                        pa = titleEn;
+                    } else {
+                        continue;
+                    }
+                    href = ReptileUtil.removeHtmlExtension(href);
+                    Element b = element.selectFirst("b");
+                    Optional<TMetadataHtmlChapters> first = tMetadataHtmlChapters.stream().filter(i -> i.getContent().contains(b.text())).findFirst();
 
-                int lastSlashIndex = url.lastIndexOf("/");
-                String result = url.substring(0, lastSlashIndex);
-                String picUrl = result + "/" + href;
-                String path = "\\pic\\石油勘探与开发\\" + pa;
-                String pathName = ReptileUtil.saveImageToLocal(picUrl, path);
+                    int lastSlashIndex = url.lastIndexOf("/");
+                    String result = url.substring(0, lastSlashIndex);
+                    String picUrl = result + "/" + href;
+                    String path = "\\pic\\石油勘探与开发\\" + pa;
+                    String pathName = ReptileUtil.saveImageToLocal(picUrl, path);
 
-                TMetadataHtmlRes tMetadataHtmlRes = new TMetadataHtmlRes();
-                tMetadataHtmlRes.setId(IdUtil.simpleUUID());
-                tMetadataHtmlRes.setMetadataHtmlId(id);
-                tMetadataHtmlRes.setType(1);
-                tMetadataHtmlRes.setPath(pathName);
-                if (first.isPresent()) {
-                    tMetadataHtmlRes.setChapterId(first.get().getId());
+                    TMetadataHtmlRes tMetadataHtmlRes = new TMetadataHtmlRes();
+                    tMetadataHtmlRes.setId(IdUtil.simpleUUID());
+                    tMetadataHtmlRes.setMetadataHtmlId(id);
+                    tMetadataHtmlRes.setType(1);
+                    tMetadataHtmlRes.setPath(pathName);
+                    if (first.isPresent()) {
+                        tMetadataHtmlRes.setChapterId(first.get().getId());
+                    }
+                    tMetadataHtmlResMapper.insert(tMetadataHtmlRes);
+
                 }
-                tMetadataHtmlResMapper.insert(tMetadataHtmlRes);
+            }catch (Exception e){
 
             }
+
         }
 
         //表格
@@ -230,7 +244,7 @@ public class TMetadataHtmlChaptersServiceImpl extends ServiceImpl<TMetadataHtmlC
      * @throws IOException
      */
     public void getChildAddress2() throws IOException {
-        for (int i = 1480; i < 1481; i++) {
+        for (int i = 1480; i < 1489; i++) {
             String url = "http://www.cpedm.com/CN/volumn/volumn_" + i + ".shtml";
             String htmlDocument = ReptileUtil.getHtmlDocument(url);
             Document doc = Jsoup.parse(htmlDocument);
@@ -239,10 +253,16 @@ public class TMetadataHtmlChaptersServiceImpl extends ServiceImpl<TMetadataHtmlC
                 Element literatureMain = select.selectFirst("div.j-title-1").selectFirst("a");
                 if (literatureMain != null) {
                     String literatureMainUrl = literatureMain.attr("href");
-                    String doi = select.selectFirst("a.j-doi").text();
-                    String removre = "https://doi.org/";
-                    doi = doi.substring(removre.length());
-                    getLiteratureContent2(literatureMainUrl, doi);
+                    if(StrUtil.isNotEmpty(literatureMainUrl)){
+                        String doi = select.selectFirst("a.j-doi").text();
+                        String removre = "https://doi.org/";
+                        doi = doi.substring(removre.length());
+                        try {
+                            getLiteratureContent2(literatureMainUrl, doi);
+                        }catch (Exception e){
+                            System.out.println(literatureMainUrl);
+                        }
+                    }
                 }
             }
         }
@@ -342,7 +362,7 @@ public class TMetadataHtmlChaptersServiceImpl extends ServiceImpl<TMetadataHtmlC
                 href = a.attr("src");
             }
             if (href != null) {
-                String pa = "";
+                String pa;
                 if (StrUtil.isNotEmpty(titleCn)) {
                     pa = titleCn;
                 } else if (StrUtil.isEmpty(titleCn) && StrUtil.isNotEmpty(titleEn)) {
@@ -354,10 +374,8 @@ public class TMetadataHtmlChaptersServiceImpl extends ServiceImpl<TMetadataHtmlC
                 Element b = element.selectFirst("strong");
                 Optional<TMetadataHtmlChapters> first = tMetadataHtmlChapters.stream().filter(i -> i.getContent().contains(b.text())).findFirst();
 
-                int lastSlashIndex = url.lastIndexOf("/");
-                String result = url.substring(0, lastSlashIndex);
-                String picUrl = result + "/" + href;
-                String path = "\\pic\\石油勘探与开发\\" + pa;
+                String picUrl = href;
+                String path = "\\pic2\\石油勘探与开发\\" + pa;
                 String pathName = ReptileUtil.saveImageToLocal(picUrl, path);
 
                 TMetadataHtmlRes tMetadataHtmlRes = new TMetadataHtmlRes();
@@ -372,22 +390,22 @@ public class TMetadataHtmlChaptersServiceImpl extends ServiceImpl<TMetadataHtmlC
 
             }
         }
-//
-//        //表格
-//        Elements formAll = doc.select("div.table.outline_anchor");
-//        for (Element element : formAll) {
-//            if (element != null) {
-//                TMetadataHtmlRes tMetadataHtmlRes = new TMetadataHtmlRes();
-//                tMetadataHtmlRes.setId(IdUtil.simpleUUID());
-//                tMetadataHtmlRes.setMetadataHtmlId(id);
-//                tMetadataHtmlRes.setType(2);
-//                Element b = element.selectFirst("b");
-//                Optional<TMetadataHtmlChapters> first = tMetadataHtmlChapters.stream().filter(i -> i.getContent().contains(b.text())).findFirst();
-//                tMetadataHtmlRes.setChapterId(first.get().getId());
-//                tMetadataHtmlRes.setTableHtml(element.html());
-//                tMetadataHtmlResMapper.insert(tMetadataHtmlRes);
-//            }
-//        }
+
+        //表格
+        Elements formAll = doc.select("div.mag_main_table");
+        for (Element element : formAll) {
+            if (element != null) {
+                TMetadataHtmlRes tMetadataHtmlRes = new TMetadataHtmlRes();
+                tMetadataHtmlRes.setId(IdUtil.simpleUUID());
+                tMetadataHtmlRes.setMetadataHtmlId(id);
+                tMetadataHtmlRes.setType(2);
+                Element b = element.selectFirst("div.mag_main_table_title");
+                Optional<TMetadataHtmlChapters> first = tMetadataHtmlChapters.stream().filter(i -> i.getContent().contains(b.text())).findFirst();
+                tMetadataHtmlRes.setChapterId(first.get().getId());
+                tMetadataHtmlRes.setTableHtml(element.html());
+                tMetadataHtmlResMapper.insert(tMetadataHtmlRes);
+            }
+        }
 
         TMetadataHtml metadataHtml = new TMetadataHtml();
         metadataHtml.setId(id);

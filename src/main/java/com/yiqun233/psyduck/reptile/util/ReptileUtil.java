@@ -102,6 +102,7 @@ public class ReptileUtil {
         createFolderIfNotExists(localFolderPath);
 
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setConnectTimeout(180000);
         connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3");
 
         // 使用 InputStream 从网络获取数据
