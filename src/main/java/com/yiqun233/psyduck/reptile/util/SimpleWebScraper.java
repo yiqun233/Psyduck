@@ -12,7 +12,7 @@ public class SimpleWebScraper {
         WebDriver driver = new EdgeDriver();
 
         // 打开目标网页
-        driver.get("http://www.cpedm.com/CN/10.11698/PED.20230152#9");
+        driver.get("http://www.cpedm.com/CN/10.11698/PED.20230152");
 
         // 执行JavaScript代码，以模拟浏览器行为（如果需要）
         // driver.executeScript("javascript:...");

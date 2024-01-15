@@ -12,7 +12,4 @@ import java.io.IOException;
 */
 public interface TMetadataHtmlChaptersService extends IService<TMetadataHtmlChapters> {
 
-    void getChildAddress() throws IOException;
-
-    void getChildAddress2() throws IOException;
 }

@@ -92,4 +92,22 @@ public class TMetadataHtml implements Serializable {
     @TableField("metadata_str")
     private String metadataStr;
 
+    /**
+     * 文章发布组织-中文
+     */
+    @TableField("organization_cn")
+    private String organizationCn;
+
+    /**
+     * 文章发布组织-英文
+     */
+    @TableField("metadata_str")
+    private String organizationEn;
+
+    /**
+     * url地址
+     */
+    @TableField("source")
+    private String source;
+
 }
