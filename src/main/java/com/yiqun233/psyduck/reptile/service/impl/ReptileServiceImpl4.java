@@ -314,14 +314,15 @@ public class ReptileServiceImpl4 implements ReptileService4 {
         Elements element3 = doc.select("div.main_content_top_btn");
         String authorsCn = "";
         String authorsEn = "";
-        if (element3.size() > 1) {
-            authorsCn = element3.get(0).text();
+        if (element3.size() > 2) {
+            authorsCn = element3.get(1).text();
         }
-        if (element3.size() > 1) {
+        if (element3.size() > 2) {
+            authorsEn = element3.get(2).text();
+        }
+        if (element3.size() == 2) {
             authorsEn = element3.get(1).text();
-        }
-        if (element3.size() == 1) {
-            authorsEn = element3.get(0).text();
+            authorsCn = element3.get(1).text();
         }
 
         Elements element4 = doc.select("div.main_content_center_left_zhengwen");
