@@ -1,5 +1,7 @@
 package com.yiqun233.psyduck.reptile.service;
 
+import java.io.IOException;
+
 /**
  * /**
  * 1沉积学报 2南京大学报 3海洋石油 4石油勘探与开发 5石油与天然气地质 6西南石油大学学报
@@ -10,5 +12,5 @@ package com.yiqun233.psyduck.reptile.service;
  */
 public interface ReptileService3 {
 
-
+    void getChildAddress() throws IOException;
 }
